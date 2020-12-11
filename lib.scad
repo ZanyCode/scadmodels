@@ -1,7 +1,6 @@
 module latch(width, lever_length, hook_length, inner_axis_radius, hinge_outer_radius, lever_angle=0, hook_angle=0, lever_hinge_distance=3, lever_elevation=3, tolerance=0.3) {
     base_width = width - inner_axis_radius*3 - tolerance*4; 
     base_to_latch_hinge_ratio = 2 / 1;
-    echo(hinge_outer_radius);
     base_hinge_width = base_width / base_to_latch_hinge_ratio - tolerance*2;
     latch_hinge_width = (base_width - base_hinge_width) / 2 - tolerance;
 
@@ -18,7 +17,7 @@ module latch(width, lever_length, hook_length, inner_axis_radius, hinge_outer_ra
                 };
 
                 translate([hinge_outer_radius, (base_width - base_hinge_width) / 2 - 1, hinge_outer_radius]) rotate([-90, 0, 0]) 
-                    cylinder(base_hinge_width+2, inner_axis_radius + tolerance, inner_axis_radius+tolerance);
+                    cylinder(base_hinge_width+2, inner_axis_radius + tolerance*0.8, inner_axis_radius+tolerance*0.8);
             }
         }
 
@@ -65,8 +64,8 @@ module latch(width, lever_length, hook_length, inner_axis_radius, hinge_outer_ra
         }  
 
         module side_rod() {
-             translate([0, 0, -inner_axis_radius/2])
-                    cube([hook_length, inner_axis_radius, inner_axis_radius]);
+             translate([0, 0, -hinge_outer_radius/2])
+                    cube([hook_length, inner_axis_radius, hinge_outer_radius]);
         }
 
         difference() {
@@ -104,14 +103,41 @@ module latch(width, lever_length, hook_length, inner_axis_radius, hinge_outer_ra
             rotate([0, hook_angle*-1, 0])
             hook();
     }   
-
-
 }
 
-$fs=.1;
-$fa=.1;
-cube([40, 20, 3.6]);
-translate([15, 0, 3.6])
-    latch(20, 20, 22, 3, 4.5, lever_angle=0, hook_angle=0, lever_elevation=1, tolerance=0.4);
-translate([3.5,5.5,3])
-    cube([5, 9, 7]);
+// 3S 1300 LiPo from Drone Art
+$battery_size=[34, 71, 23];
+module battery() {
+    cube($battery_size);
+    translate([-7, -20, 0]) cube([7, 30, $battery_size[2]]);
+    translate([$battery_size[0]-6, -20, 0]) cube([6, 20, 23]);
+}
+
+// Flysky iA6B Receiver
+module receiver() {
+    cube([26.5, 47, 10.7]);
+    cube([26.5, 12.5, 15.1]);
+
+    translate([0, 12.5, 15.1])
+    rotate([0, 90, 0])
+    linear_extrude(height=26.5)
+        polygon(points=[[0, 0], [4.5, 2.1], [4.5, 0]]);
+
+    translate([5.6, 47, 5])
+        rotate([-90, 0, 0])        
+        cylinder(30, 3.5, 3.5);
+
+    translate([26.5-5.6, 47, 5])
+        rotate([-90, 0, 0])        
+        cylinder(30, 3.5, 3.5);
+}
+
+// $fs=.1;
+// $fa=.1;
+// cube([40, 20, 3.6]);
+// translate([15, 0, 3.6])
+//     latch(20, 20, 22, 3, 4.5, lever_angle=90, hook_angle=0, lever_elevation=1, tolerance=0.5);
+// translate([3,5.5,3])
+//     cube([5, 9, 6]);
+// translate([0,5.5,9])
+//     cube([8, 9, 3]);

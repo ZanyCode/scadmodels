@@ -1,4 +1,5 @@
 include <helper.scad>
+include <../lib.scad>
 
 // General config
 $fa=0.1;
@@ -8,9 +9,9 @@ $tolerance = .2; // Specifies, how much space there should be left between parts
 // Common plate parameters
 $base_strength = 1.8;
 $screw_hole_diameter = 3.3;
-$base_size = [80, 110, $base_strength];
+$base_size = [100, 120, $base_strength];
 $base_distance = 50; // Spacing between top/bottom base plates
-$outer_size = [160, 160];    
+$outer_size = [175, 175];    
          
 // Arm Parameters
 $arm_strength = 3;
@@ -58,12 +59,28 @@ module base_plate(fillet_width, fillet_angle_deg) {
    
 }
 
-module top_plate(fillet_width, fillet_angle_deg) {
+module top_plate(fillet_width, fillet_angle_deg) {    
     base_plate(fillet_width, fillet_angle_deg);
+    battery_shift_x = ($base_size[0]- $battery_size[0])/2;
+    battery_shift_y = ($base_size[0]- $battery_size[1])/2;
+    hull_size = $battery_size + [$base_strength, $base_strength, $base_strength];
+
+    difference() {        
+        
+        cube(hull_size);
+
+        // translate([0, 0, $base_strength]) {        
+        //     translate([battery_shift_x, battery_shift_y, 0])
+        //         battery();
+        //     // translate([battery_shift_x+34, battery_shift_y, $base_strength+26.5])
+        //     //     rotate([0, 90, 0])
+        //     //     color("red") receiver();
+        // }            
+    }
 }
 
 
-module bot_plate(fillet_width, fillet_angle_deg) {
+module bot_plate(fillet_width, fillet_angle_deg) {       
     base_plate(fillet_width, fillet_angle_deg);
 }
 
@@ -156,8 +173,8 @@ t_arm_upward = $base_size[2] + $tolerance / 2;
 // Move origin from base plate to arm
 translate(($outer_size-$base_size) / 2) {
     /***Objects****/
-    color("green") top_plate($motor_diameter, arm_angle);
-    color("red") translate([0, 0, -$base_distance - $base_strength]) bot_plate($motor_diameter, arm_angle);
+    top_plate($motor_diameter, arm_angle);
+    translate([0, 0, -$base_distance - $base_strength]) bot_plate($motor_diameter, arm_angle);
 
     // Base Plates
     translate([($base_size[0] - $outer_size[0])/ 2, ($base_size[1] - $outer_size[1]) / 2,-$base_distance-20]) %cube([$outer_size[0], $outer_size[1], 5]);
