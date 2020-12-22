@@ -1,5 +1,6 @@
-$fn=500;
+include <../lib.scad>
 
+$fn=200;
 
 battery_tolerance=2;
 plane_width = 52;
@@ -48,10 +49,6 @@ module battery_case() {
         rotate([0, 180, 0]) cube([strength, case_size[1]/2, strength*2]);
 }
 
-// module door_rails() {
-//     cube([])
-// }
-
 wheel_segment_height = (distance_to_ground - wheel_radius - wheel_tolerance) / 2;
 module wheel() {
     translate([0, -strength, -wheel_span_width]) cube([wheel_frame_width, strength, wheel_span_width]);
@@ -81,13 +78,34 @@ module wheel() {
     }
 }
 
-plane_hook();
-translate([0, -hook_height/2-case_size[1]/2+strength, 0]) battery_case();
-translate([-case_size[0]/2, -case_size[1]-hook_height/2+strength*2, -case_size[2]/4])
-    wheel();
-translate([-case_size[0]/2+wheel_frame_width, -case_size[1]-hook_height/2+strength*2, case_size[2]/4])
-    rotate([0, 180, 0]) 
-    wheel();
+module lid(){
+    difference() {
+        cube([strength, case_size[1], case_size[2]+strength*2]);
+        translate([0, case_size[1]/4-wheel_tolerance, strength*2]) 
+            cube([strength, case_size[1]/2+wheel_tolerance*2, strength*2+wheel_tolerance*2]);
+         translate([0,0, case_size[2]+strength]) 
+            cube([strength, case_size[1], strength]);
+          translate([0, 0, case_size[2]-10+strength*2]) 
+            cube([strength*2, 5, 10]);
+        translate([0, case_size[1]-5, case_size[2]-10+strength*2]) 
+            cube([strength*2, 5, 10]);
+        
+    }    
+
+    translate([strength, 0, 32])
+        rotate([0, 90, 0])
+        latch(case_size[1], 20, 22, 2, 4.5, lever_angle=90, hook_angle=90, lever_elevation=1, tolerance=0.5);    
+}
+
+// plane_hook();
+// translate([0, -hook_height/2-case_size[1]/2+strength, 0]) battery_case();
+// translate([-case_size[0]/2, -case_size[1]-hook_height/2+strength*2, -case_size[2]/4])
+//     wheel();
+// translate([-case_size[0]/2+wheel_frame_width, -case_size[1]-hook_height/2+strength*2, case_size[2]/4])
+//     rotate([0, 180, 0]) 
+//     wheel();
+translate([case_size[0]/2 + wheel_tolerance/2, -hook_height/2-case_size[1]+strength, -case_size[2]/2-strength*2]) lid();
+
 
 
 // diff() {

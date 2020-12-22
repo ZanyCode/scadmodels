@@ -86,7 +86,7 @@ module latch(width, lever_length, hook_length, inner_axis_radius, hinge_outer_ra
                 cylinder(base_width + inner_axis_radius*2 + tolerance*2 + 2, inner_axis_radius+tolerance, inner_axis_radius+tolerance);
         }
 
-        translate([hook_length-inner_axis_radius, 0, -inner_axis_radius/2])
+        translate([hook_length-inner_axis_radius, 0, 0])
             cube([inner_axis_radius, base_width+inner_axis_radius*2+tolerance*2, inner_axis_radius]);
     }
 
